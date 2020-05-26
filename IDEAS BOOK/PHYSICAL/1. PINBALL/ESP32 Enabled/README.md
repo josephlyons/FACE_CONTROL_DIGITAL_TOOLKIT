@@ -69,6 +69,10 @@ Next we establish the WiFi Client and MQTT Client and establish an unsigned long
   client.subscribe(eyebrows);
 }
 
-Okay! Now into the running code - here we establish a connection with shiftr.io. This block of code is ran later on within the setup when "connect()" is called. You will need to change the two chunks of numbers and letters ( "90a85098", "a7fed12984960679") to the corresponding chunks from your own shiftr.io namespace. How to do that linked here:
+Okay! Now into the running code - here we establish a connection with shiftr.io. This block of code is ran later on within the setup when "connect()" is called. You will need to change the two chunks of numbers and letters ( "90a85098", "a7fed12984960679"), known as the 'Key' and 'Secret' to the corresponding ones from your own shiftr.io namespace. How to do that linked here:
+[https://github.com/josephlyons/FACE_CONTROL_DIGITAL_TOOLKIT/tree/master/IDEAS%20BOOK/PHYSICAL/1.%20PINBALL/ESP32%20Enabled/Creating%20a%20Shiftr.io%20Namespace](https://github.com/josephlyons/FACE_CONTROL_DIGITAL_TOOLKIT/tree/master/IDEAS%20BOOK/PHYSICAL/1.%20PINBALL/ESP32%20Enabled/Creating%20a%20Shiftr.io%20Namespace)
+Or navigate to the folder above called "Creating a Shiftr.io Namespace".
+
+
 
 
