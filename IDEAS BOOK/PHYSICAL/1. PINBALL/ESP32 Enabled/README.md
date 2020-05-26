@@ -17,6 +17,12 @@ Link:
 
 This one was a little more expensive than the others but in my opinion is worth it for the ease of use and setup.
 
+## Modifying Hardware
+
+The setup on an ESP32 and an Arduino is almost identialy except that the pins are different. In the code you use pins 13 and 14 and these are labeled on the ESP32 as IO13 and IO14.
+
+![enter image description here](https://github.com/josephlyons/FACE_CONTROL_DIGITAL_TOOLKIT/blob/master/IDEAS%20BOOK/PHYSICAL/1.%20PINBALL/ESP32%20Enabled/images/pins.jpg?raw=true)
+
 # Setup with Arduino IDE
 
 Setting up an ESP32 Dev Board with the Arduino IDE is not obvious or well documented, but here is what you need to do.
@@ -33,7 +39,7 @@ Then select 'Port' and click the relevant port for your ESP32 Dev Board.
 
 The Arduino IDE is now setup for use with the ESP32 Board, and this is universal for any sketch or work you are doing with an ESP32.
 
-# Understanding the example
+## Understanding the example
 
 Here I am discussing the above example in the folder [RECIEVE_pinball](https://github.com/josephlyons/FACE_CONTROL_DIGITAL_TOOLKIT/tree/master/IDEAS%20BOOK/PHYSICAL/1.%20PINBALL/ESP32%20Enabled/RECIEVE_pinball "RECIEVE_pinball") 
 which is being used to allow a minature pinball machine to recieve data from shiftr.io to trigger the pinball machine, in this case the data is dictated by the height of the users eyebrows.
@@ -138,3 +144,81 @@ Here we use valA and valB to control servoA and servoB respectively, and so we e
 Then once this has happened there is some simple "if, else if, else" logic that is determining whether the Rval integer - which is taken from the String message sent via shiftr.io (from processing and ultimately from your eyebrows) - matches either a 1 or a 2, and depending on which of these is true it changes the angle of the servo motors.
 
 And that sums up the explaination of the arduino code.
+
+# Setup with Processing
+
+
+## Key Send Test
+
+You will need to use the processing sketch [Processing Key Send](https://github.com/josephlyons/FACE_CONTROL_DIGITAL_TOOLKIT/blob/master/IDEAS%20BOOK/PHYSICAL/1.%20PINBALL/ESP32%20Enabled/processing_key_send/processing_key_send.pde) to test if this is working.
+
+This, and the "Processing Eyebrow Send" code is also compatible with the "Open Source Pong" Digital Example from The Face Control Kit. And that is why you get the option of 1, 2 and 3 to be send - since the Pong example uses both a "Raise", "Neutral" and "Frown" pose as control triggers. However, in this particular example we are only using "Raise" and "Neutral", raise to trigger the pinball paddles and neutral in all other cases.
+
+> import mqtt.*;
+> MQTTClient client:
+
+Here we import the mqtt library into process and establish this sketch as a client.
+
+>void setup() 
+>{
+>  size(360, 360); 
+>  client = new MQTTClient(this);
+>  client.connect("mqtt://90a85098:a7fed12984960679@broker.shiftr.io", "processing via keys");
+>   
+>    client.publish("/eyebrows", "0");
+>     background(0, 0, 250);
+> }
+
+Here we have the setup. "size(360, 360)" draws a canvas of that size. We then establish the sketch as a mqtt cleint again and use the namespace token address to connect to our namespace. "processing via keys" names the sketches location in the namespace so that when messages are passed into shiftr.io you can see they are from this sketch.
+
+I then send a one of "0" message to the namespace to the namespace to ensure that the pins begin in the downward position (and in open source pong this establishes the paddle as not moving - it also means that if you were to modify the RC Skateboard example to be wifi enabled, it would establish itself as not moving.)
+"background(0, 0 , 250)" sets the background to blue in accordance to the colour coding later on.
+
+> void draw() {}
+
+in this example the draw loop is empty because there is no code that continually happens without a different function happening.
+
+> void keyPressed() 
+> {
+>   if (key == '1') { //1
+>   client.publish("/eyebrows", "1"); //raise 
+>   background(250, 250, 0);
+>   rect(170, 25, 25, 300);
+>   } else if (key == '2') { //2
+>     client.publish("/eyebrows", "2"); //frown
+>     background(0, 250, 0);
+>     rect(150, 25, 25, 300);
+>     rect(190, 25, 25, 300);
+>     } else if (key == '3') { //3 //neutral
+>       client.publish("/eyebrows", "0");
+>       background(0, 0, 250);
+>      rect(130, 25, 25, 300);
+>    rect(170, 25, 25, 300);
+>     rect(210, 25, 25, 300);
+>       }
+> delay(15);        
+>  }
+
+Here we have the keyPressed function. In this case detects which key is being pressed (1, 2 or 3) and runs a small amount of code for each of these scenarios. Firstly it publishes a message in the form of a string of "1", "2", or "3", dependant on which key is pressed, to the /eyebrows topic. For each different option it sets the background to a different colour and draws either 1 2 or 3 rectangles on the screen to represent each selection.
+
+> void clientConnected() {
+>   println("client connected");
+> 
+>   client.subscribe("/hello");
+> }
+>
+> void messageReceived(String topic, byte[] payload) {
+>   println("new message: " + topic + " - " + new String(payload));
+> }
+>
+> void connectionLost() {
+>   println("connection lost");
+> }
+
+Here we have the rest of the code required to allow processing to connect to shiftr.io properly. To be completely honest I'm not sure what's going on here but Joel from shiftr.io does! You can see the shiftr.io [Documentation](https://docs.shiftr.io/) page for more info.
+
+If you have this running properly it will be allowing you to control the pinball with the number keys on your keyboard! The next step is to get it running with your eyebrows.
+
+## Eyebrow Send
+
+
