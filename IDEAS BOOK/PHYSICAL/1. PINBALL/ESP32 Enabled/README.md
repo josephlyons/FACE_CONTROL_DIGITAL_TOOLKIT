@@ -248,6 +248,8 @@ On Mac, to override your security settings and open the app, find FaceOSC via Fi
 
 ### Understanding the Processing Code
 
+The example code we are using here is [Eyebrow_Send](https://github.com/josephlyons/FACE_CONTROL_DIGITAL_TOOLKIT/blob/master/IDEAS%20BOOK/PHYSICAL/1.%20PINBALL/ESP32%20Enabled/processing_eyebrow_send/processing_eyebrow_send.pde).
+
 You need to go to Sketch>Import Library> Add Library. 
 Search for oscp5, install this library. 
 Search for netP5, install this library.
