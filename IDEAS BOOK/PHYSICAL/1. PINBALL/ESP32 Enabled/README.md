@@ -2,11 +2,20 @@
 
 This is a guide to taking a project based on Arduino and locally controlled and translating it onto ESP32 Dev Boards as to allow it to be controlled by processing via Shiftr.io. I will show two examples - controlling the project with keyboard keys & controlling it with your eyebrows!
 
+### Files in this Folder
+
+- "Creating a Shiftr.io Namespace" Guide to creating your own namespace and all access token on shiftr.io.
+- "RECIEVE_PINBALL" Arduino sketch to be uploaded to ESP32 for ESP32 EBC Pinball.
+- "images" Folder to host all the images hosted in this README.
+- "processing_eyebrow_send" Processing sketch to send data from faceOSC to shiftr.io.
+- "proccessing_key_send" Processing sketch to send data from your keyboard to shiftr.io.
+- "README.md" is this readme file.
+
 ## What is an ESP32?
 
 An ESP32 is a microcontroller board used for the development of WiFi & Bluetooth enabled projects.
 
-## Which one do I buy?
+### Which one do I buy?
 
 Any ESP32 Dev board that you can buy should be fine as long as it works! However for ease of use, getting a pre-solded board with mounts makes prototyping much easier & faster. I also chose to get a board that resembles an Arduino which makes it a little more friendly and easy to understand.
 
@@ -17,7 +26,7 @@ Link:
 
 This one was a little more expensive than the others but in my opinion is worth it for the ease of use and setup.
 
-## Modifying Hardware
+### Modifying Hardware
 
 The setup on an ESP32 and an Arduino is almost identialy except that the pins are different. In the code you use pins 13 and 14 and these are labeled on the ESP32 as IO13 and IO14.
 
@@ -39,7 +48,7 @@ Then select 'Port' and click the relevant port for your ESP32 Dev Board.
 
 The Arduino IDE is now setup for use with the ESP32 Board, and this is universal for any sketch or work you are doing with an ESP32.
 
-## Understanding the example
+### Understanding the example
 
 Here I am discussing the above example in the folder [RECIEVE_pinball](https://github.com/josephlyons/FACE_CONTROL_DIGITAL_TOOLKIT/tree/master/IDEAS%20BOOK/PHYSICAL/1.%20PINBALL/ESP32%20Enabled/RECIEVE_pinball "RECIEVE_pinball") 
 which is being used to allow a minature pinball machine to recieve data from shiftr.io to trigger the pinball machine, in this case the data is dictated by the height of the users eyebrows.
@@ -154,6 +163,9 @@ You will need to use the processing sketch [Processing Key Send](https://github.
 
 This, and the "Processing Eyebrow Send" code is also compatible with the "Open Source Pong" Digital Example from The Face Control Kit. And that is why you get the option of 1, 2 and 3 to be send - since the Pong example uses both a "Raise", "Neutral" and "Frown" pose as control triggers. However, in this particular example we are only using "Raise" and "Neutral", raise to trigger the pinball paddles and neutral in all other cases.
 
+You need to go to Sketch>Import Library> Add Library. 
+Search for mqtt, install this library. 
+
 > import mqtt.*;
 > MQTTClient client:
 
@@ -221,4 +233,23 @@ If you have this running properly it will be allowing you to control the pinball
 
 ## Eyebrow Send
 
+Here we incorporate the osc library to recieve OSC messages from FaceOSC.
 
+Download and Install FaceOSC  [https://github.com/kylemcdonald/ofxFaceTracker/releases](https://github.com/kylemcdonald/ofxFaceTracker/releases)
+On Mac, to override your security settings and open the app, find FaceOSC via Finder (and not launchpad) control-click the app icon, then choose Open from the shortcut menu.
+
+You need to go to Sketch>Import Library> Add Library. 
+Search for oscp5, install this library. 
+Search for netP5, install this library.
+
+> import oscP5.*; //  Load OSC P5 library
+> import netP5.*; //  Load net P5 library
+> import mqtt.*;  // Load mqtt library
+> float eyebrow;
+>
+> MQTTClient client;
+> 
+> OscP5 oscP5;
+> NetAddress myRemoteLocation;
+
+Here again we import libraries and initialise aspects of mqtt and OSCp5.
