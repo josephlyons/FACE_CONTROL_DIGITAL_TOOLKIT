@@ -2,6 +2,8 @@
 
 This is a guide to taking a project based on Arduino and locally controlled and translating it onto ESP32 Dev Boards as to allow it to be controlled by processing via Shiftr.io. I will show two examples - controlling the project with keyboard keys & controlling it with your eyebrows!
 
+![enter image description here](https://github.com/josephlyons/FACE_CONTROL_DIGITAL_TOOLKIT/blob/master/IDEAS%20BOOK/PHYSICAL/1.%20PINBALL/ESP32%20Enabled/images/esp%20enabled%20pinball.jpg?raw=true)
+
 ### Files in this Folder
 
 - "Creating a Shiftr.io Namespace" Guide to creating your own namespace and all access token on shiftr.io.
@@ -48,7 +50,7 @@ Then select 'Port' and click the relevant port for your ESP32 Dev Board.
 
 The Arduino IDE is now setup for use with the ESP32 Board, and this is universal for any sketch or work you are doing with an ESP32.
 
-### Understanding the example
+### Understanding the Arduino Code
 
 Here I am discussing the above example in the folder [RECIEVE_pinball](https://github.com/josephlyons/FACE_CONTROL_DIGITAL_TOOLKIT/tree/master/IDEAS%20BOOK/PHYSICAL/1.%20PINBALL/ESP32%20Enabled/RECIEVE_pinball "RECIEVE_pinball") 
 which is being used to allow a minature pinball machine to recieve data from shiftr.io to trigger the pinball machine, in this case the data is dictated by the height of the users eyebrows.
@@ -166,6 +168,8 @@ This, and the "Processing Eyebrow Send" code is also compatible with the "Open S
 You need to go to Sketch>Import Library> Add Library. 
 Search for mqtt, install this library. 
 
+### Understanding the Processing Code
+
 > import mqtt.*;
 > MQTTClient client:
 
@@ -235,8 +239,14 @@ If you have this running properly it will be allowing you to control the pinball
 
 Here we incorporate the osc library to recieve OSC messages from FaceOSC.
 
+
+### Setting up FaceOSC
+
 Download and Install FaceOSC  [https://github.com/kylemcdonald/ofxFaceTracker/releases](https://github.com/kylemcdonald/ofxFaceTracker/releases)
 On Mac, to override your security settings and open the app, find FaceOSC via Finder (and not launchpad) control-click the app icon, then choose Open from the shortcut menu.
+
+
+### Understanding the Processing Code
 
 You need to go to Sketch>Import Library> Add Library. 
 Search for oscp5, install this library. 
@@ -253,3 +263,107 @@ Search for netP5, install this library.
 > NetAddress myRemoteLocation;
 
 Here again we import libraries and initialise aspects of mqtt and OSCp5.
+
+The "void setup()" section of code is identical except for this line
+
+>oscP5 = new OscP5(this, 8338);
+
+This initialises the oscP5 library and begins listening on this sketch to port 8338, which is the default port for faceOSC to output data to.
+
+> void draw()
+> {
+>   if (eyebrow > 7.3 && eyebrow < 8.5){  //anywhere from 7.3 to 8.5 = neutral
+>     background(0, 0, 250);
+>    rect(130, 25, 25, 300);
+>     rect(170, 25, 25, 300);
+>     rect(210, 25, 25, 300);
+>    textSize(32);
+>     text("neutral", 10, 30); 
+>     fill(0, 102, 153);
+>     } else if (eyebrow < 7.3) { // below 7 frown
+>       background(0, 250, 0);
+>       rect(150, 25, 25, 300);
+>       rect(190, 25, 25, 300);
+>       textSize(32);
+>       text("frown", 10, 30); 
+>       fill(0, 102, 153);
+>       } else if (eyebrow > 8.5) { //above 8.5 raise
+>         background(250, 250, 0);
+>         rect(170, 25, 25, 300);
+>         textSize(32);
+>         text("raise", 10, 30); 
+>         fill(0, 102, 153);
+>          }
+> }
+
+This draw loop takes the data from the float "eyebrow" which is reading the height of your eyebrow via faceOSC, and draws a different coloured background onto the sketch, and the numbers 3, 2 or 1 depending on the equivalent within key send dependent on the eyebrow height - for a "raise", "neutral" or "frown" pose.
+It also displays text for this on the sketch.
+
+> void oscEvent(OscMessage theOscMessage) 
+> {
+> if (theOscMessage.checkAddrPattern("/gesture/eyebrow/left")==true) 
+>  {
+>  float firstValue = theOscMessage.get(0).floatValue();
+>   eyebrow = firstValue; //get osc data for left eyebrow and put it into float "eyebrow"
+
+Here the osc library  is checking for osc events and messages - an if statement then sorts the path to the left eyebrow. It takes the value from this as a float, then converts it into the float "eyebrow".
+
+>   if (eyebrow > 7.3 && eyebrow < 8.5){  //from 7.3 to 8.5 = neutral
+>     client.publish("/eyebrows", "0"); 
+>    } else if (eyebrow < 7.3) { // below 7 = frown
+>       client.publish("/eyebrows", "2"); 
+>       } else if (eyebrow > 8.5) { //above 8.5 = raise
+>         client.publish("/eyebrows", "1"); 
+>         }
+>  delay(15);
+>    }
+> }
+
+Here we use the eyebrow value and some simple thresholds to define whether the eyebrow position is in "raise", "neutral" or "frown". We then publish a message to shiftr.io dependent on this. Both this and the "key_send" sketch send either 0, 1 or 2. This means that the Arduino sketch is compatible with both "key_send" and "eyebrow_send".
+
+> void clientConnected() {
+>   println("client connected");
+>
+>   client.subscribe("/hello");
+> }
+>
+> void messageReceived(String topic, byte[] payload) {
+>   println("new message: " + topic + " - " + new String(payload));
+> }
+
+> void connectionLost() {
+>   println("connection lost");
+> }
+
+More code to ensure communication to shiftr.io is working correctly.
+
+## Getting it all working together
+
+At this point you have everything together to get your eyebrows controlling the ESP32 enabled EBC Pinball working. All you need to do is:
+
+- Open FaceOSC
+- Run the Eyebrow_Send Processing Sketch.
+- Plug the ESP32/Pinball Machine into a power source (this can be a battery pack since the system is wireless).
+
+Your eyebrows should be controlling the paddles on the pinball machine!
+
+If you are having issues, test with the Key_Send sketch first to ensure shiftr.io is working.
+
+
+### Congrats
+
+Congratulations! if you have it working, this means you have an:
+
+- open source,
+- eyebrow controlled,
+- wifi enabled,
+- mini pinball machine.
+
+In theory you understand the ideas of:
+
+- distributed design,
+- face control & expressive interaction,
+- internet of things,
+- fun,
+
+You are now equiped to prototype and develop your ideas within any of these areas of design!
