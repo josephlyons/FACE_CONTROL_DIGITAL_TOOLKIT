@@ -1,38 +1,10 @@
 # Eyebrow Controlled Tempo
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Max for Live patch allowing you to control the master tempo in Ableton Live using your eyebrows via facial landmarking software.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Softwares Guide
-
-
 
 
 
@@ -70,15 +42,7 @@ Open Sound Control \(OSC\) is a protocol for communication among computers, soun
 
 
 
-
-
 ## 1. Install FaceOSC
-
-
-
-
-
-
 
 
 
@@ -118,26 +82,11 @@ This software will use your webcam to track locations on your face and give nume
 
 
 
-
-
-
-
-
-
-
-
 You can try Ableton Live free for 30 days which will allow you to experiment with this hack, but will need to purchase it \(or borrow a license from a friend, like I am\) if you wish to use it for longer.
 
 ​
 
 https://www.ableton.com/en/trial/
-
-
-
-
-
-
-
 
 
 
