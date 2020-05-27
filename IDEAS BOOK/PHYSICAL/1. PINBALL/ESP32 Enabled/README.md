@@ -339,7 +339,7 @@ Here we use the eyebrow value and some simple thresholds to define whether the e
 
 More code to ensure communication to shiftr.io is working correctly.
 
-## Getting it all working together
+# Getting it all working together
 
 At this point you have everything together to get your eyebrows controlling the ESP32 enabled EBC Pinball working. All you need to do is:
 
