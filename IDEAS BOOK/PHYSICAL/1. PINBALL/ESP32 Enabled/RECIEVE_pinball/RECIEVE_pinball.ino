@@ -50,14 +50,12 @@ void loop()
   client.loop();
   delay(10);
 
-  if (!client.connected()) {
+ if (!client.connected()) {
     connect();
-  }
-  
-if (client.connected())
-  {
-  valB = 180-valA;
-    if(Rval == 1) // frown
+ }
+{
+valB = 180-valA;
+if(Rval == 1) // frown
     {
       valA = 180;
       servoA.write(valA);
